@@ -26,8 +26,8 @@ const Rentals: React.FC = () => {
         return new Intl.NumberFormat('cs-CZ', { style: 'currency', currency: 'CZK', minimumFractionDigits: 0 }).format(amount);
     };
 
-    const selectedVehicle = selectedRental ? vehicles.find(v => v.id === selectedRental.vehicleId) : null;
-    const selectedCustomer = selectedRental ? customers.find(c => c.id === selectedRental.customerId) : null;
+    const selectedVehicle = selectedRental ? vehicles.find(v => v.id === selectedRental.vehicle_id) : null;
+    const selectedCustomer = selectedRental ? customers.find(c => c.id === selectedRental.customer_id) : null;
 
     if (loading) {
         return <div className="flex justify-center items-center h-full">Načítání smluv...</div>
@@ -51,16 +51,16 @@ const Rentals: React.FC = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {rentals.sort((a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime()).map(rental => {
-                                const vehicle = vehicles.find(v => v.id === rental.vehicleId);
-                                const customer = customers.find(c => c.id === rental.customerId);
+                            {rentals.sort((a, b) => new Date(b.start_date).getTime() - new Date(a.start_date).getTime()).map(rental => {
+                                const vehicle = vehicles.find(v => v.id === rental.vehicle_id);
+                                const customer = customers.find(c => c.id === rental.customer_id);
                                 return (
                                     <tr key={rental.id} className="border-b border-gray-800 hover:bg-gray-800">
-                                        <td className="p-3">{customer?.firstName} {customer?.lastName}</td>
-                                        <td className="p-3">{vehicle?.brand} <span className="text-gray-400">({vehicle?.licensePlate})</span></td>
-                                        <td className="p-3">{new Date(rental.startDate).toLocaleDateString('cs-CZ')}</td>
-                                        <td className="p-3">{new Date(rental.endDate).toLocaleDateString('cs-CZ')}</td>
-                                        <td className="p-3">{formatCurrency(rental.totalPrice)}</td>
+                                        <td className="p-3">{customer?.first_name} {customer?.last_name}</td>
+                                        <td className="p-3">{vehicle?.brand} <span className="text-gray-400">({vehicle?.license_plate})</span></td>
+                                        <td className="p-3">{new Date(rental.start_date).toLocaleDateString('cs-CZ')}</td>
+                                        <td className="p-3">{new Date(rental.end_date).toLocaleDateString('cs-CZ')}</td>
+                                        <td className="p-3">{formatCurrency(rental.total_price)}</td>
                                         <td className="p-3">{getStatusChip(rental.status)}</td>
                                         <td className="p-3">
                                             <Button onClick={() => setSelectedRental(rental)}>Zobrazit smlouvu</Button>

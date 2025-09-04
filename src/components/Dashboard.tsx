@@ -25,14 +25,14 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, icon }) => (
     </Card>
 );
 
-const AttentionItem: React.FC<{ vehicle: Vehicle, reason: string, date: string }> = ({ vehicle, reason, date }) => (
+const AttentionItem: React.FC<{ vehicle: Vehicle, reason: string, date: string | null }> = ({ vehicle, reason, date }) => (
     <div className="p-3 bg-gray-900 rounded-lg flex justify-between items-center">
         <div>
-            <p className="font-bold">{vehicle.brand} ({vehicle.licensePlate})</p>
+            <p className="font-bold">{vehicle.brand} ({vehicle.license_plate})</p>
             <p className="text-sm text-text-secondary">{reason}</p>
         </div>
         <div className="text-right">
-            <p className="font-semibold text-red-400">{new Date(date).toLocaleDateString('cs-CZ')}</p>
+            <p className="font-semibold text-red-400">{date ? new Date(date).toLocaleDateString('cs-CZ') : 'N/A'}</p>
         </div>
     </div>
 );
@@ -54,12 +54,14 @@ const Dashboard: React.FC = () => {
         const thirtyDaysFromNow = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
         
         const stkSoon = vehicles.filter(v => {
-            const stkDate = new Date(v.stkDate);
+            if (!v.stk_date) return false;
+            const stkDate = new Date(v.stk_date);
             return stkDate <= thirtyDaysFromNow && stkDate >= now;
         });
 
         const vignetteSoon = vehicles.filter(v => {
-            const vignetteDate = new Date(v.vignetteUntil);
+            if (!v.vignette_until) return false;
+            const vignetteDate = new Date(v.vignette_until);
             return vignetteDate <= thirtyDaysFromNow && vignetteDate >= now;
         });
         
@@ -67,7 +69,7 @@ const Dashboard: React.FC = () => {
         const today = new Date();
 
         const returningToday = rentals.filter(r => {
-            const endDate = new Date(r.endDate);
+            const endDate = new Date(r.end_date);
             return r.status === 'active' && isSameDay(endDate, today);
         });
 
@@ -77,17 +79,17 @@ const Dashboard: React.FC = () => {
     const revenueByVehicle = useMemo(() => {
         const revenueMap = new Map<string, number>();
         rentals.forEach(rental => {
-            const vehicle = vehicles.find(v => v.id === rental.vehicleId);
+            const vehicle = vehicles.find(v => v.id === rental.vehicle_id);
             if (vehicle) {
                 const currentRevenue = revenueMap.get(vehicle.brand) || 0;
-                revenueMap.set(vehicle.brand, currentRevenue + rental.totalPrice);
+                revenueMap.set(vehicle.brand, currentRevenue + rental.total_price);
             }
         });
         return Array.from(revenueMap.entries()).map(([name, revenue]) => ({ name, 'Příjmy': revenue }));
     }, [rentals, vehicles]);
     
-    const selectedVehicleForView = viewingRental ? vehicles.find(v => v.id === viewingRental.vehicleId) : null;
-    const selectedCustomerForView = viewingRental ? customers.find(c => c.id === viewingRental.customerId) : null;
+    const selectedVehicleForView = viewingRental ? vehicles.find(v => v.id === viewingRental.vehicle_id) : null;
+    const selectedCustomerForView = viewingRental ? customers.find(c => c.id === viewingRental.customer_id) : null;
 
     if (loading) {
         return <div className="flex justify-center items-center h-full">Načítání nástěnky...</div>
@@ -115,14 +117,14 @@ const Dashboard: React.FC = () => {
                         <h3 className="text-lg font-semibold mb-4 flex items-center"><AlertTriangleIcon className="w-6 h-6 mr-3 text-red-500"/>Vyžaduje pozornost</h3>
                         <div className="space-y-4">
                             {attentionItems.returningToday.length > 0 && attentionItems.returningToday.map(rental => {
-                                const vehicle = vehicles.find(v => v.id === rental.vehicleId);
-                                return vehicle && <AttentionItem key={`ret-${rental.id}`} vehicle={vehicle} reason="Vrátit dnes" date={rental.endDate} />
+                                const vehicle = vehicles.find(v => v.id === rental.vehicle_id);
+                                return vehicle && <AttentionItem key={`ret-${rental.id}`} vehicle={vehicle} reason="Vrátit dnes" date={rental.end_date} />
                             })}
                              {attentionItems.stkSoon.length > 0 && attentionItems.stkSoon.map(vehicle => (
-                                <AttentionItem key={`stk-${vehicle.id}`} vehicle={vehicle} reason="Končí STK" date={vehicle.stkDate} />
+                                <AttentionItem key={`stk-${vehicle.id}`} vehicle={vehicle} reason="Končí STK" date={vehicle.stk_date} />
                             ))}
                             {attentionItems.vignetteSoon.length > 0 && attentionItems.vignetteSoon.map(vehicle => (
-                                <AttentionItem key={`vig-${vehicle.id}`} vehicle={vehicle} reason="Končí dálniční známka" date={vehicle.vignetteUntil} />
+                                <AttentionItem key={`vig-${vehicle.id}`} vehicle={vehicle} reason="Končí dálniční známka" date={vehicle.vignette_until} />
                             ))}
                              {attentionItems.stkSoon.length === 0 && attentionItems.vignetteSoon.length === 0 && attentionItems.returningToday.length === 0 && (
                                 <p className="text-text-secondary">Žádné nadcházející události nevyžadují pozornost.</p>
@@ -132,9 +134,9 @@ const Dashboard: React.FC = () => {
                     <Card>
                         <h3 className="text-lg font-semibold mb-4">Aktivní Pronájmy</h3>
                         <div className="space-y-4">
-                            {activeRentals.length > 0 ? activeRentals.sort((a,b) => new Date(a.endDate).getTime() - new Date(b.endDate).getTime()).map(rental => {
-                                const vehicle = vehicles.find(v => v.id === rental.vehicleId);
-                                const customer = customers.find(c => c.id === rental.customerId);
+                            {activeRentals.length > 0 ? activeRentals.sort((a,b) => new Date(a.end_date).getTime() - new Date(b.end_date).getTime()).map(rental => {
+                                const vehicle = vehicles.find(v => v.id === rental.vehicle_id);
+                                const customer = customers.find(c => c.id === rental.customer_id);
                                 return (
                                     <div 
                                       key={rental.id} 
@@ -142,12 +144,12 @@ const Dashboard: React.FC = () => {
                                       onClick={() => setViewingRental(rental)}
                                     >
                                         <div>
-                                            <p className="font-bold">{vehicle?.brand} ({vehicle?.licensePlate})</p>
-                                            <p className="text-sm text-text-secondary">{customer?.firstName} {customer?.lastName}</p>
+                                            <p className="font-bold">{vehicle?.brand} ({vehicle?.license_plate})</p>
+                                            <p className="text-sm text-text-secondary">{customer?.first_name} {customer?.last_name}</p>
                                         </div>
                                         <div className="text-right">
                                             <p className="font-semibold text-accent">Návrat:</p>
-                                            <p className="text-sm">{new Date(rental.endDate).toLocaleString('cs-CZ')}</p>
+                                            <p className="text-sm">{new Date(rental.end_date).toLocaleString('cs-CZ')}</p>
                                         </div>
                                     </div>
                                 );

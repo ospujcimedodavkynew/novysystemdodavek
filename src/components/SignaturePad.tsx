@@ -5,7 +5,7 @@ export interface SignaturePadRef {
   getSignature: () => string | undefined;
 }
 
-const SignaturePad = forwardRef<SignaturePadRef, {}>((props, ref) => {
+const SignaturePad = forwardRef<SignaturePadRef, {}>((_, ref) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const isDrawing = useRef(false);
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);

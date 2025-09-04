@@ -49,7 +49,7 @@ const ContractView: React.FC<ContractViewProps> = ({ rental, vehicle, customer, 
         }
 
         const contractHtml = contentClone.innerHTML;
-        const title = `Smlouva o pronájmu vozidla ${vehicle.brand} (${vehicle.licensePlate})`;
+        const title = `Smlouva o pronájmu vozidla ${vehicle.brand} (${vehicle.license_plate})`;
 
         return `
             <!DOCTYPE html>
@@ -79,7 +79,7 @@ const ContractView: React.FC<ContractViewProps> = ({ rental, vehicle, customer, 
             addToast("Smlouva musí být podepsána před odesláním.", 'error');
             return;
         }
-        const subject = `Smlouva o pronájmu vozidla ${vehicle.brand} (${vehicle.licensePlate})`;
+        const subject = `Smlouva o pronájmu vozidla ${vehicle.brand} (${vehicle.license_plate})`;
         const body = createEmailBody();
         const mailtoLink = `mailto:${customer.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
         
@@ -114,7 +114,7 @@ const ContractView: React.FC<ContractViewProps> = ({ rental, vehicle, customer, 
         
         const cleanBankAccountNumber = bankAccountNumber.replace(/\s/g, '');
         
-        const spaydString = `SPD*1.0*ACC:${cleanBankAccountNumber}*AM:${rental.totalPrice.toFixed(2)}*CC:CZK*X-VS:${rental.id.replace(/\D/g, '').slice(0, 10)}*MSG:PRONAJEM-${vehicle.licensePlate}`;
+        const spaydString = `SPD*1.0*ACC:${cleanBankAccountNumber}*AM:${rental.total_price.toFixed(2)}*CC:CZK*X-VS:${rental.id.replace(/\D/g, '').slice(0, 10)}*MSG:PRONAJEM-${vehicle.license_plate}`;
         
         const encodedSpayd = encodeURIComponent(spaydString);
         
@@ -128,18 +128,18 @@ const ContractView: React.FC<ContractViewProps> = ({ rental, vehicle, customer, 
                 
                 <h3 className="text-lg font-semibold text-text-primary mt-4">1. Smluvní strany</h3>
                 <p><strong>Pronajímatel:</strong> Milan Gula, Ghegova 1019/1, Nové sady, Brno, 60200, IČO: 07031653</p>
-                <p><strong>Nájemce:</strong> {customer.firstName} {customer.lastName}, Tel: {customer.phone}, Email: {customer.email}</p>
-                <p>Číslo OP: {customer.idCardNumber}, Číslo ŘP: {customer.driversLicenseNumber}</p>
+                <p><strong>Nájemce:</strong> {customer.first_name} {customer.last_name}, Tel: {customer.phone}, Email: {customer.email}</p>
+                <p>Číslo OP: {customer.id_card_number}, Číslo ŘP: {customer.drivers_license_number}</p>
                 
                 <h3 className="text-lg font-semibold text-text-primary mt-4">2. Předmět nájmu</h3>
                 <p><strong>Vozidlo:</strong> {vehicle.brand}</p>
-                <p><strong>SPZ:</strong> {vehicle.licensePlate}</p>
+                <p><strong>SPZ:</strong> {vehicle.license_plate}</p>
                 <p><strong>VIN:</strong> {vehicle.vin}</p>
                 
                 <h3 className="text-lg font-semibold text-text-primary mt-4">3. Doba nájmu a cena</h3>
-                <p><strong>Začátek nájmu:</strong> {new Date(rental.startDate).toLocaleString('cs-CZ')}</p>
-                <p><strong>Konec nájmu:</strong> {new Date(rental.endDate).toLocaleString('cs-CZ')}</p>
-                <p><strong>Celková cena:</strong> {new Intl.NumberFormat('cs-CZ', { style: 'currency', currency: 'CZK' }).format(rental.totalPrice)}</p>
+                <p><strong>Začátek nájmu:</strong> {new Date(rental.start_date).toLocaleString('cs-CZ')}</p>
+                <p><strong>Konec nájmu:</strong> {new Date(rental.end_date).toLocaleString('cs-CZ')}</p>
+                <p><strong>Celková cena:</strong> {new Intl.NumberFormat('cs-CZ', { style: 'currency', currency: 'CZK' }).format(rental.total_price)}</p>
 
                 <h3 className="text-lg font-semibold text-text-primary mt-4">4. Práva a povinnosti</h3>
                 <p>Nájemce se zavazuje používat vozidlo s péčí řádného hospodáře. Vozidlo nesmí být použito k páchání trestné činnosti. Nájemce je plně odpovědný za veškeré pokuty a sankce vzniklé během doby pronájmu.</p>
@@ -193,7 +193,7 @@ const ContractView: React.FC<ContractViewProps> = ({ rental, vehicle, customer, 
                         <img src={generateQrCodeUrl()} alt="QR kód pro platbu" className="rounded-lg mb-4"/>
                         <h3 className="text-lg font-semibold">Naskenujte kód v bankovní aplikaci</h3>
                         <div className="mt-4 text-left bg-gray-900 p-4 rounded-lg">
-                            <p><strong>Částka:</strong> {new Intl.NumberFormat('cs-CZ', { style: 'currency', currency: 'CZK' }).format(rental.totalPrice)}</p>
+                            <p><strong>Částka:</strong> {new Intl.NumberFormat('cs-CZ', { style: 'currency', currency: 'CZK' }).format(rental.total_price)}</p>
                             <p><strong>Číslo účtu (IBAN):</strong> {bankAccountNumber}</p>
                             <p><strong>Variabilní symbol:</strong> {rental.id.replace(/\D/g, '').slice(0, 10)}</p>
                         </div>

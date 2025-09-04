@@ -17,32 +17,32 @@ export interface Database {
         Row: {
           id: string
           created_at: string
-          firstName: string
-          lastName:string
+          first_name: string
+          last_name:string
           email: string
-          phone: string
-          idCardNumber: string
-          driversLicenseNumber: string
+          phone: string | null
+          id_card_number: string | null
+          drivers_license_number: string | null
         }
         Insert: {
           id?: string
           created_at?: string
-          firstName: string
-          lastName:string
+          first_name: string
+          last_name:string
           email: string
-          phone: string
-          idCardNumber: string
-          driversLicenseNumber: string
+          phone: string | null
+          id_card_number: string | null
+          drivers_license_number: string | null
         }
         Update: {
           id?: string
           created_at?: string
-          firstName?: string
-          lastName?:string
+          first_name?: string
+          last_name?:string
           email?: string
-          phone?: string
-          idCardNumber?: string
-          driversLicenseNumber?: string
+          phone?: string | null
+          id_card_number?: string | null
+          drivers_license_number?: string | null
         }
       }
       vehicles: {
@@ -50,42 +50,42 @@ export interface Database {
           id: string
           created_at: string
           brand: 'Renault Master' | 'Opel Movano' | 'Fiat Ducato' | 'Peugeot Boxer' | 'Mercedes Sprinter'
-          licensePlate: string
+          license_plate: string
           vin: string
           year: number
-          lastServiceDate: string
-          lastServiceCost: number
-          stkDate: string
-          insuranceInfo: string
-          vignetteUntil: string
+          last_service_date: string | null
+          last_service_cost: number | null
+          stk_date: string | null
+          insurance_info: string | null
+          vignette_until: string | null
           pricing: Json
         }
         Insert: {
           id?: string
           created_at?: string
           brand: 'Renault Master' | 'Opel Movano' | 'Fiat Ducato' | 'Peugeot Boxer' | 'Mercedes Sprinter'
-          licensePlate: string
+          license_plate: string
           vin: string
           year: number
-          lastServiceDate: string
-          lastServiceCost: number
-          stkDate: string
-          insuranceInfo: string
-          vignetteUntil: string
+          last_service_date: string | null
+          last_service_cost: number | null
+          stk_date: string | null
+          insurance_info: string | null
+          vignette_until: string | null
           pricing: Json
         }
         Update: {
           id?: string
           created_at?: string
           brand?: 'Renault Master' | 'Opel Movano' | 'Fiat Ducato' | 'Peugeot Boxer' | 'Mercedes Sprinter'
-          licensePlate?: string
+          license_plate?: string
           vin?: string
           year?: number
-          lastServiceDate?: string
-          lastServiceCost?: number
-          stkDate?: string
-          insuranceInfo?: string
-          vignetteUntil?: string
+          last_service_date?: string | null
+          last_service_cost?: number | null
+          stk_date?: string | null
+          insurance_info?: string | null
+          vignette_until?: string | null
           pricing?: Json
         }
       }
@@ -93,31 +93,31 @@ export interface Database {
         Row: {
             id: string
             created_at: string
-            vehicleId: string
-            customerId: string
-            startDate: string
-            endDate: string
-            totalPrice: number
+            vehicle_id: string
+            customer_id: string
+            start_date: string
+            end_date: string
+            total_price: number
             status: 'active' | 'completed' | 'upcoming'
         }
         Insert: {
             id?: string
             created_at?: string
-            vehicleId: string
-            customerId: string
-            startDate: string
-            endDate: string
-            totalPrice: number
+            vehicle_id: string
+            customer_id: string
+            start_date: string
+            end_date: string
+            total_price: number
             status: 'active' | 'completed' | 'upcoming'
         }
         Update: {
             id?: string
             created_at?: string
-            vehicleId?: string
-            customerId?: string
-            startDate?: string
-            endDate?: string
-            totalPrice?: number
+            vehicle_id?: string
+            customer_id?: string
+            start_date?: string
+            end_date?: string
+            total_price?: number
             status?: 'active' | 'completed' | 'upcoming'
         }
       }

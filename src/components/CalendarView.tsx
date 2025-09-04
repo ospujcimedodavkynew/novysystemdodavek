@@ -31,8 +31,8 @@ const CalendarView: React.FC = () => {
   const month = currentDate.getMonth();
   const daysInMonth = getDaysInMonth(year, month);
   
-  const selectedVehicle = selectedRental ? vehicles.find(v => v.id === selectedRental.vehicleId) : null;
-  const selectedCustomer = selectedRental ? customers.find(c => c.id === selectedRental.customerId) : null;
+  const selectedVehicle = selectedRental ? vehicles.find(v => v.id === selectedRental.vehicle_id) : null;
+  const selectedCustomer = selectedRental ? customers.find(c => c.id === selectedRental.customer_id) : null;
 
   const renderCalendarGrid = () => {
     const today = new Date();
@@ -54,7 +54,7 @@ const CalendarView: React.FC = () => {
             <div className="sticky left-0 bg-surface z-10 p-2 border-r border-b border-gray-700 text-sm font-medium whitespace-nowrap overflow-hidden text-ellipsis flex items-center">
               <div>
                 {vehicle.brand}
-                <span className="block text-xs text-gray-400">{vehicle.licensePlate}</span>
+                <span className="block text-xs text-gray-400">{vehicle.license_plate}</span>
               </div>
             </div>
             
@@ -62,10 +62,10 @@ const CalendarView: React.FC = () => {
                 {Array.from({ length: daysInMonth }, (_, i) => <div key={i} className="h-14 border-r border-gray-800"></div>)}
                 
                 {rentals
-                    .filter(r => r.vehicleId === vehicle.id)
+                    .filter(r => r.vehicle_id === vehicle.id)
                     .map(rental => {
-                        const rentalStart = new Date(rental.startDate);
-                        const rentalEnd = new Date(rental.endDate);
+                        const rentalStart = new Date(rental.start_date);
+                        const rentalEnd = new Date(rental.end_date);
                         const startOfMonth = new Date(year, month, 1);
                         const endOfMonth = new Date(year, month, daysInMonth, 23, 59, 59);
 
@@ -79,7 +79,7 @@ const CalendarView: React.FC = () => {
                         const startDay = effectiveStart.getDate();
                         const endDay = effectiveEnd.getDate();
 
-                        const customer = customers.find(c => c.id === rental.customerId);
+                        const customer = customers.find(c => c.id === rental.customer_id);
 
                         return (
                             <div
@@ -89,9 +89,9 @@ const CalendarView: React.FC = () => {
                                     gridColumn: `${startDay} / ${endDay + 1}`,
                                 }}
                                 onClick={() => setSelectedRental(rental)}
-                                title={`${customer?.firstName} ${customer?.lastName} (${rentalStart.toLocaleDateString('cs-CZ')} - ${rentalEnd.toLocaleDateString('cs-CZ')})`}
+                                title={`${customer?.first_name} ${customer?.last_name} (${rentalStart.toLocaleDateString('cs-CZ')} - ${rentalEnd.toLocaleDateString('cs-CZ')})`}
                             >
-                                <p className="truncate pl-1">{customer?.firstName} {customer?.lastName}</p>
+                                <p className="truncate pl-1">{customer?.first_name} {customer?.last_name}</p>
                             </div>
                         );
                     })}

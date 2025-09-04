@@ -25,8 +25,8 @@ const NewRentalForm: React.FC<NewRentalFormProps> = ({ onSave, onCancel }) => {
     const [selectedCustomerId, setSelectedCustomerId] = useState<string>('');
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const [customer, setCustomer] = useState<Omit<Customer, 'id'>>({
-        firstName: '', lastName: '', email: '', phone: '', idCardNumber: '', driversLicenseNumber: ''
+    const [customer, setCustomer] = useState<Omit<Customer, 'id' | 'created_at'>>({
+        first_name: '', last_name: '', email: '', phone: '', id_card_number: '', drivers_license_number: ''
     });
     const [vehicleId, setVehicleId] = useState<string>('');
     const [startDate, setStartDate] = useState(getFormattedCurrentDateTime());
@@ -40,7 +40,7 @@ const NewRentalForm: React.FC<NewRentalFormProps> = ({ onSave, onCancel }) => {
                 setCustomer(existingCustomer);
             }
         } else {
-            setCustomer({ firstName: '', lastName: '', email: '', phone: '', idCardNumber: '', driversLicenseNumber: '' });
+            setCustomer({ first_name: '', last_name: '', email: '', phone: '', id_card_number: '', drivers_license_number: '' });
         }
     }, [customerType, selectedCustomerId, customers]);
 
@@ -55,10 +55,10 @@ const NewRentalForm: React.FC<NewRentalFormProps> = ({ onSave, onCancel }) => {
         if (start >= end) return new Set(vehicles.map(v => v.id));
 
         const unavailable = rentals.filter(rental => {
-            const rentalStart = new Date(rental.startDate);
-            const rentalEnd = new Date(rental.endDate);
+            const rentalStart = new Date(rental.start_date);
+            const rentalEnd = new Date(rental.end_date);
             return start < rentalEnd && end > rentalStart;
-        }).map(rental => rental.vehicleId);
+        }).map(rental => rental.vehicle_id);
         
         return new Set(unavailable);
     }, [startDate, endDate, rentals, vehicles]);
@@ -72,8 +72,8 @@ const NewRentalForm: React.FC<NewRentalFormProps> = ({ onSave, onCancel }) => {
     const isFormValid = useMemo(() => {
         const customerDetailsValid = customerType === 'existing'
             ? !!selectedCustomerId
-            : customer.firstName && customer.lastName && customer.email && customer.phone &&
-              customer.idCardNumber && customer.driversLicenseNumber;
+            : customer.first_name && customer.last_name && customer.email && customer.phone &&
+              customer.id_card_number && customer.drivers_license_number;
 
         return (
             customerDetailsValid && vehicleId &&
@@ -135,12 +135,12 @@ const NewRentalForm: React.FC<NewRentalFormProps> = ({ onSave, onCancel }) => {
                 customerIdToUse = selectedCustomerId;
             }
 
-            const newRental: Omit<Rental, 'id'> = {
-                customerId: customerIdToUse,
-                vehicleId,
-                startDate,
-                endDate,
-                totalPrice,
+            const newRental: Omit<Rental, 'id' | 'created_at'> = {
+                customer_id: customerIdToUse,
+                vehicle_id: vehicleId,
+                start_date: startDate,
+                end_date: endDate,
+                total_price: totalPrice,
                 status: new Date(startDate) > new Date() ? 'upcoming' : 'active',
             };
 
@@ -165,18 +165,18 @@ const NewRentalForm: React.FC<NewRentalFormProps> = ({ onSave, onCancel }) => {
 
                 {customerType === 'new' ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <Input label="Jméno" name="firstName" value={customer.firstName} onChange={handleCustomerChange} required />
-                        <Input label="Příjmení" name="lastName" value={customer.lastName} onChange={handleCustomerChange} required />
+                        <Input label="Jméno" name="first_name" value={customer.first_name} onChange={handleCustomerChange} required />
+                        <Input label="Příjmení" name="last_name" value={customer.last_name} onChange={handleCustomerChange} required />
                         <Input label="Email" name="email" type="email" value={customer.email} onChange={handleCustomerChange} required />
-                        <Input label="Telefon" name="phone" type="tel" value={customer.phone} onChange={handleCustomerChange} required />
-                        <Input label="Číslo OP" name="idCardNumber" value={customer.idCardNumber} onChange={handleCustomerChange} required />
-                        <Input label="Číslo ŘP" name="driversLicenseNumber" value={customer.driversLicenseNumber} onChange={handleCustomerChange} required />
+                        <Input label="Telefon" name="phone" type="tel" value={customer.phone || ''} onChange={handleCustomerChange} required />
+                        <Input label="Číslo OP" name="id_card_number" value={customer.id_card_number || ''} onChange={handleCustomerChange} required />
+                        <Input label="Číslo ŘP" name="drivers_license_number" value={customer.drivers_license_number || ''} onChange={handleCustomerChange} required />
                     </div>
                 ) : (
                     <div>
                         <Select label="Vyberte zákazníka" value={selectedCustomerId} onChange={e => setSelectedCustomerId(e.target.value)} required>
                             <option value="">-- Vyberte --</option>
-                            {customers.map(c => <option key={c.id} value={c.id}>{c.firstName} {c.lastName} ({c.email})</option>)}
+                            {customers.map(c => <option key={c.id} value={c.id}>{c.first_name} {c.last_name} ({c.email})</option>)}
                         </Select>
                     </div>
                 )}
@@ -189,7 +189,7 @@ const NewRentalForm: React.FC<NewRentalFormProps> = ({ onSave, onCancel }) => {
                         {vehicles.map(v => {
                             const isUnavailable = unavailableVehicleIds.has(v.id);
                             return <option key={v.id} value={v.id} disabled={isUnavailable}>
-                                {v.brand} - {v.licensePlate} {isUnavailable ? '(Obsazeno)' : ''}
+                                {v.brand} - {v.license_plate} {isUnavailable ? '(Obsazeno)' : ''}
                             </option>
                         })}
                     </Select>
