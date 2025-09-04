@@ -115,7 +115,7 @@ const CalendarView: React.FC = () => {
         </div>
       </div>
       <div className="overflow-x-auto bg-surface rounded-lg">
-          {loading ? <div className="h-48 flex justify-center items-center">Načítání kalendáře...</div> : renderCalendarGrid()}
+          {loading ? <div className="h-48 flex justify-center items-center"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent"></div></div> : renderCalendarGrid()}
       </div>
     </Card>
     {selectedRental && selectedVehicle && selectedCustomer && (

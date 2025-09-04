@@ -18,7 +18,6 @@ const VehicleForm: React.FC<{ vehicle?: Vehicle; onSave: (vehicle: Omit<Vehicle,
         pricing: { '4h': 0, '6h': 0, '12h': 0, '24h': 0, daily: 0 },
     });
 
-    // FIX: Correctly handle type conversions for number fields from form inputs.
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         
@@ -27,7 +26,6 @@ const VehicleForm: React.FC<{ vehicle?: Vehicle; onSave: (vehicle: Omit<Vehicle,
         } else if (name === 'year') {
              setFormData(prev => ({ ...prev, [name]: Number(value) }));
         } else {
-             // Handle empty strings for nullable fields
             const valueToSet = (e.target.type === 'date' || name === 'insurance_info') && value === '' ? null : value;
             setFormData(prev => ({ ...prev, [name]: valueToSet }));
         }
@@ -142,7 +140,7 @@ const Fleet: React.FC = () => {
     };
     
     if (loading) {
-        return <div className="flex justify-center items-center h-full">Načítání vozového parku...</div>
+        return <div className="flex justify-center items-center h-full"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent"></div></div>
     }
 
     return (

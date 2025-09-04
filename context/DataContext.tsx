@@ -1,6 +1,4 @@
-
 import React, { createContext, useState, useContext, ReactNode } from 'react';
-import { mockVehicles, mockCustomers, mockRentals } from '../data/mockData';
 import type { Vehicle, Customer, Rental, ToastMessage } from '../types';
 
 interface DataContextType {
@@ -20,9 +18,10 @@ interface DataContextType {
 const DataContext = createContext<DataContextType | undefined>(undefined);
 
 export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [vehicles, setVehicles] = useState<Vehicle[]>(mockVehicles);
-  const [customers, setCustomers] = useState<Customer[]>(mockCustomers);
-  const [rentals, setRentals] = useState<Rental[]>(mockRentals);
+  // FIX: Initialize state with empty arrays to fix module loading error from mockData.ts
+  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [rentals, setRentals] = useState<Rental[]>([]);
   const [bankAccountNumber, setBankAccountNumber] = useState('CZ5808000000000123456789'); // Default for demonstration
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
 

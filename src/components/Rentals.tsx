@@ -30,7 +30,7 @@ const Rentals: React.FC = () => {
     const selectedCustomer = selectedRental ? customers.find(c => c.id === selectedRental.customer_id) : null;
 
     if (loading) {
-        return <div className="flex justify-center items-center h-full">Načítání smluv...</div>
+        return <div className="flex justify-center items-center h-full"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent"></div></div>
     }
 
     return (
