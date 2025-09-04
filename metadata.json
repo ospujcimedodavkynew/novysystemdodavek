@@ -1,0 +1,5 @@
+{
+  "name": "Copy of Půjčovna Dodávek Správce",
+  "description": "Komplexní webová aplikace pro správu vozového parku a rezervací pro půjčovnu dodávek. Umožňuje správu vozidel, sledování pronájmů, generování smluv a finanční přehledy.",
+  "requestFramePermissions": []
+}
