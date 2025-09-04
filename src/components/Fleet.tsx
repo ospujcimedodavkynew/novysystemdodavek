@@ -4,7 +4,7 @@ import { Card, Button, Modal, Input, ConfirmModal } from './ui';
 import { EditIcon, TrashIcon, PlusIcon, CalendarIcon, WrenchIcon, ShieldCheckIcon } from './Icons';
 import { useData } from '../context/DataContext';
 
-const VehicleForm: React.FC<{ vehicle?: Vehicle; onSave: (vehicle: Omit<Vehicle, 'id'> | Vehicle) => void; onCancel: () => void; isSubmitting: boolean; }> = ({ vehicle, onSave, onCancel, isSubmitting }) => {
+const VehicleForm: React.FC<{ vehicle?: Vehicle; onSave: (vehicle: Omit<Vehicle, 'id' | 'created_at'> | Vehicle) => void; onCancel: () => void; isSubmitting: boolean; }> = ({ vehicle, onSave, onCancel, isSubmitting }) => {
     const [formData, setFormData] = useState<Omit<Vehicle, 'id' | 'created_at'> | Vehicle>(vehicle || {
         brand: 'Renault Master',
         license_plate: '',
@@ -18,9 +18,19 @@ const VehicleForm: React.FC<{ vehicle?: Vehicle; onSave: (vehicle: Omit<Vehicle,
         pricing: { '4h': 0, '6h': 0, '12h': 0, '24h': 0, daily: 0 },
     });
 
+    // FIX: Correctly handle type conversions for number fields from form inputs.
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
+        
+        if (name === 'last_service_cost') {
+             setFormData(prev => ({ ...prev, [name]: value === '' ? null : Number(value) }));
+        } else if (name === 'year') {
+             setFormData(prev => ({ ...prev, [name]: Number(value) }));
+        } else {
+             // Handle empty strings for nullable fields
+            const valueToSet = (e.target.type === 'date' || name === 'insurance_info') && value === '' ? null : value;
+            setFormData(prev => ({ ...prev, [name]: valueToSet }));
+        }
     };
 
     const handlePricingChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -50,7 +60,7 @@ const VehicleForm: React.FC<{ vehicle?: Vehicle; onSave: (vehicle: Omit<Vehicle,
                  <Input label="VIN" name="vin" value={formData.vin} onChange={handleChange} required />
                  <Input label="Rok výroby" name="year" type="number" value={formData.year} onChange={handleChange} required />
                  <Input label="Poslední servis (datum)" name="last_service_date" type="date" value={formData.last_service_date || ''} onChange={handleChange} />
-                 <Input label="Cena servisu (Kč)" name="last_service_cost" type="number" value={String(formData.last_service_cost || '')} onChange={handleChange} />
+                 <Input label="Cena servisu (Kč)" name="last_service_cost" type="number" value={String(formData.last_service_cost === null ? '' : formData.last_service_cost)} onChange={handleChange} />
                  <Input label="STK do" name="stk_date" type="date" value={formData.stk_date || ''} onChange={handleChange} />
                  <Input label="Dálniční známka do" name="vignette_until" type="date" value={formData.vignette_until || ''} onChange={handleChange} />
                  <Input label="Pojištění info" name="insurance_info" value={formData.insurance_info || ''} onChange={handleChange} className="md:col-span-2" />
@@ -104,14 +114,14 @@ const Fleet: React.FC = () => {
         }
     };
     
-    const handleSave = async (vehicleData: Omit<Vehicle, 'id'> | Vehicle) => {
+    const handleSave = async (vehicleData: Omit<Vehicle, 'id' | 'created_at'> | Vehicle) => {
         setIsSubmitting(true);
         try {
             if ('id' in vehicleData) {
                 await updateVehicle(vehicleData as Vehicle);
                 addToast('Vozidlo bylo úspěšně upraveno.', 'success');
             } else {
-                await addVehicle(vehicleData as Omit<Vehicle, 'id'>);
+                await addVehicle(vehicleData as Omit<Vehicle, 'id' | 'created_at'>);
                 addToast('Vozidlo bylo úspěšně přidáno.', 'success');
             }
             setIsModalOpen(false);

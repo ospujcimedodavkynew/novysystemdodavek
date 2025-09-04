@@ -12,11 +12,11 @@ interface DataContextType {
   addToast: (message: string, type: ToastMessage['type']) => void;
   removeToast: (id: number) => void;
   loading: boolean;
-  addVehicle: (vehicle: Omit<Vehicle, 'id'>) => Promise<void>;
+  addVehicle: (vehicle: Omit<Vehicle, 'id' | 'created_at'>) => Promise<void>;
   updateVehicle: (vehicle: Vehicle) => Promise<void>;
   deleteVehicle: (id: string) => Promise<void>;
-  addCustomer: (customer: Omit<Customer, 'id'>) => Promise<Customer | null>;
-  addRental: (rental: Omit<Rental, 'id'>) => Promise<void>;
+  addCustomer: (customer: Omit<Customer, 'id' | 'created_at'>) => Promise<Customer | null>;
+  addRental: (rental: Omit<Rental, 'id' | 'created_at'>) => Promise<void>;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -68,7 +68,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     fetchData();
   }, [fetchData]);
 
-  const addVehicle = async (vehicle: Omit<Vehicle, 'id'>) => {
+  const addVehicle = async (vehicle: Omit<Vehicle, 'id' | 'created_at'>) => {
     const { data, error } = await supabase.from('vehicles').insert([vehicle]).select();
     if (error) {
         addToast(`Chyba při přidávání vozidla: ${error.message}`, 'error');
@@ -80,7 +80,8 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const updateVehicle = async (vehicle: Vehicle) => {
-    const { data, error } = await supabase.from('vehicles').update(vehicle).eq('id', vehicle.id).select();
+    const { id, ...updateData } = vehicle;
+    const { data, error } = await supabase.from('vehicles').update(updateData).eq('id', id).select();
      if (error) {
         addToast(`Chyba při úpravě vozidla: ${error.message}`, 'error');
         throw error;
@@ -99,7 +100,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setVehicles(prev => prev.filter(v => v.id !== id));
   };
   
-  const addCustomer = async (customer: Omit<Customer, 'id'>): Promise<Customer | null> => {
+  const addCustomer = async (customer: Omit<Customer, 'id' | 'created_at'>): Promise<Customer | null> => {
     const { data, error } = await supabase.from('customers').insert([customer]).select();
     if (error) {
         addToast(`Chyba při přidávání zákazníka: ${error.message}`, 'error');
@@ -113,7 +114,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     return null;
   };
   
-  const addRental = async (rental: Omit<Rental, 'id'>) => {
+  const addRental = async (rental: Omit<Rental, 'id' | 'created_at'>) => {
     const { data, error } = await supabase.from('rentals').insert([rental]).select();
     if (error) {
         addToast(`Chyba při vytváření pronájmu: ${error.message}`, 'error');

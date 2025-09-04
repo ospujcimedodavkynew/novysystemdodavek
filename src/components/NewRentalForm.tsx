@@ -37,7 +37,8 @@ const NewRentalForm: React.FC<NewRentalFormProps> = ({ onSave, onCancel }) => {
         if (customerType === 'existing' && selectedCustomerId) {
             const existingCustomer = customers.find(c => c.id === selectedCustomerId);
             if (existingCustomer) {
-                setCustomer(existingCustomer);
+                const { id, created_at, ...customerData } = existingCustomer;
+                setCustomer(customerData);
             }
         } else {
             setCustomer({ first_name: '', last_name: '', email: '', phone: '', id_card_number: '', drivers_license_number: '' });
